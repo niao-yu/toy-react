@@ -2,13 +2,11 @@
 class ElementWrapper {
   constructor(type) {
     this.root = document.createElement(type)
-    console.log('type', type)
   }
   setAttribute(name, value) {
     this.root.setAttribute(name, value)
   }
   appendChild(component) {
-    console.log(component)
     this.root.appendChild(component.root)
   }
 }
@@ -29,34 +27,39 @@ export class Component {
   setAttribute(name, value) {
     this.props[name] = value
   }
+  appendChild(component) {
+    this.children.push(component)
+  }
   get root() {
-    console.log('获取root')
-    return {}
+    if (!this._root) this._root = this.render().root
+    return this._root
   }
 }
 
+export function render(component, element) {
+  element.appendChild(component.root)
+}
+
 export function creatElement(type, attributes, ...children) {
-  let element;
+  let e;
   if (typeof type === 'string') { // 是常规标签
-    element = new ElementWrapper(type)
+    e = new ElementWrapper(type)
   } else { // 是用户自定义组件
-    element = new type;
+    e = new type;
   }
-  for (let val in attributes) {
-    console.log(val)
-    element.setAttribute(val, attributes[val])
+  for (let p in attributes) {
+    e.setAttribute(p, attributes[p])
   }
-  console.log(2, children)
-  children.forEach(val => {
-    console.log(1, val)
-    let child
-    if (typeof val === 'string') {
-      child = new TextWrapper(val)
+  let insertChildren = children => {
+    for (let child of children) {
+      if (typeof child === 'string') {
+        child = new TextWrapper(child)
+        e.appendChild(child)
+      } else if (Array.isArray(child)) {
+        insertChildren(child)
+      } else e.appendChild(child)
     }
-    element.appendChild(child)
-  })
-
-  return element
-
-  console.log(type, attributes, children)
+  }
+  insertChildren(children)
+  return e
 }

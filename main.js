@@ -1,10 +1,23 @@
-import { creatElement } from './toy-react'
+import { creatElement, Component, render } from './toy-react'
 
-console.log(222);
+class MyComponent extends Component {
+  render() {
+    return <div class="MyComponentClass">
+      <h1>MyComponentClass</h1>
+      {this.children}
+    </div>
+  }
+}
 
-window.a = (
-  <div>
-    <div class="a" id="b"></div>
-    文字
-  </div>
+render(
+  <div class="div">
+    第一个字
+    <MyComponent>
+      <div class="a" id="b">好的吧</div>
+      <div></div>
+      <div></div>
+      文字
+    </MyComponent>
+  </div>,
+  document.querySelector('body')
 )
