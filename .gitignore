@@ -1,0 +1,25 @@
+logs/
+npm-debug.log
+yarn-error.log
+yarn-debug.log*
+node_modules/
+coverage/
+.idea/
+run/
+.DS_Store
+*.sw*
+*.un~
+typings/
+.nyc_output/
+
+# 三个持续继承工具
+.github/
+.travis.yml
+appveyor.yml
+
+# Editor directories and files
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
