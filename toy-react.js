@@ -5,7 +5,16 @@ class ElementWrapper {
     this.root = document.createElement(type)
   }
   setAttribute(name, value) {
-    this.root.setAttribute(name, value)
+    if (name.match(/^on([\s\S]+)$/)) {
+      let event = RegExp.$1.replace(/^[\s\S]/, c => c.toLowerCase())
+      this.root.addEventListener(event, value)
+    } else {
+      if (name === 'className') {
+        this.root.setAttribute('class', value)
+      } else {
+        this.root.setAttribute(name, value)
+      }
+    }
   }
   appendChild(component) {
     let range = document.createRange()
@@ -65,16 +74,10 @@ export class Component {
       return
     }
     let merge = (oldState, newState) => {
-      if (oldState === null || typeof(oldState) !== 'object') {
-        oldState = newState
-      } else {
-        for (let p in newState) {
-          if (newState[p] !== null && typeof(newState[p]) === 'object') {
-            merge(oldState[p], newState[p])
-          } else if (oldState[p] !== newState[p]) {
-            oldState[p] = newState[p]
-          }
-        }
+      for (let p in newState) {
+        if (oldState[p] === null || typeof(oldState[p]) !== 'object') {
+          oldState[p] = newState[p]
+        } else merge(oldState[p], newState[p])
       }
     }
     merge(this.state, newState)
@@ -94,10 +97,10 @@ export function creatElement(type, attributes, ...children) {
   }
   let insertChildren = children => {
     for (let child of children) {
-      if (typeof child === 'string') {
-        child = new TextWrapper(child)
-        e.appendChild(child)
-      } else if (Array.isArray(child)) {
+      if (child === null) continue
+      if (typeof child === 'string') child = new TextWrapper(child)
+      
+      if (typeof(child) === 'object' && (child instanceof Array)) {
         insertChildren(child)
       } else e.appendChild(child)
     }
