@@ -21,23 +21,17 @@ export class Component {
     this._vdom = this.vdom;
     this._vdom[RENDER_TO_DOM](range);
   }
-  update() {
+  updated() {
     let isSameNode = (oldNode, newNode) => {
-      console.log(1)
       if (oldNode.type !== newNode.type) return false;
       for (let name in newNode.props) {
-        console.log(2)
         if (newNode.props[name] !== oldNode.props[name]) return false;
       }
-      if (Object.keys(oldNode.props).length > Object.keys(newNode.props).length) {
-        console.log(3)
+      if (Object.keys(oldNode.props).length > Object.keys(newNode.props).length)
         return false;
-      }
       if (newNode.type === "#text") {
-          console.log(4)
         if (newNode.content !== oldNode.content) return false;
       }
-      console.log(5)
       return true;
     };
     let update = (oldNode, newNode) => {
@@ -88,7 +82,7 @@ export class Component {
   setState(newState) {
     if (this.state === null || typeof this.state !== "object") {
       this.state = newState;
-      this.update();
+      this.updated();
       return;
     }
     let merge = (oldState, newState) => {
@@ -102,7 +96,7 @@ export class Component {
     };
 
     merge(this.state, newState);
-    this.update();
+    this.updated();
   }
 }
 class ElementWrapper extends Component {
